@@ -20,13 +20,17 @@ for span_finder in span_finder:
         if word[i] == " ":
             word_seperator_arr.append(word[position_counter:i])
             position_counter = i+1
-    for i in range(len(word_seperator_arr)):
-        if word not in key_word_store:
+    while len(word_seperator_arr) != 0:
+        if word_seperator_arr[0] not in key_word_store:
             key_word_store.append(word_seperator_arr[0])
+            key_word_counter.append(1)
             word_seperator_arr.pop(0)
         else:
+            key_word_counter[key_word_store.index(word_seperator_arr[0])] += 1
             word_seperator_arr.pop(0)
-print(key_word_store)
+
+for i in range(len(key_word_store)):
+    print(f"{key_word_store[i]} : {key_word_counter[i]}")
 
 
 print(span_finder)
