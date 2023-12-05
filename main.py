@@ -8,7 +8,8 @@ class scraper:
         self.soup = BeautifulSoup(self.page.content, "html.parser")
         self.key_word_store = []
         self.key_word_counter = []
-        self.visited = [URL]
+        self.visited = []
+        self.visited.append(URL)
         self.URL_holder = []
     
     def update_soup(self,URL):
@@ -44,11 +45,17 @@ class scraper:
         for web_finder in web_finder:
             link_tag_string = str(web_finder)
             if "https://jujutsu-kaisen.fandom.com/wiki" in link_tag_string:
-                print(link_tag_string)
-            #index_href = link_tag_string.find('href="') + 6
-            #print(link_tag_string[index_href::])
+                index_href = link_tag_string.find('href="') + 6
+                closing_mark = index_href
+                while link_tag_string[closing_mark] != '"':
+                    closing_mark += 1
+                if link_tag_string[index_href:closing_mark:] not in self.visited:
+                    self.URL_holder.append(link_tag_string[index_href:closing_mark:])
+                    self.visited.append(link_tag_string[index_href:closing_mark:])
 
 
 scraper = scraper("https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki")
-print(scraper.web_surf())
+
+
+
 #print(soup)
