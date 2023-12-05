@@ -61,7 +61,7 @@ class scraper:
     
 
 
-scraper = scraper("https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki")
+scraper = scraper("https://dragonball.fandom.com/wiki/Main_Page")
 scraper.keyword_finder()
 scraper.web_surf()
 
