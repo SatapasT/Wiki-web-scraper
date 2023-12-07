@@ -11,6 +11,7 @@ class scraper:
         self.visited = []
         self.visited.append(URL)
         self.URL_holder = []
+        self.word_count = 0
         
         string_URL = str(URL)
         starting_index = string_URL.find("https://")
@@ -40,10 +41,12 @@ class scraper:
                     if word_seperator_arr[0].isalpha():
                         self.key_word_store.append(word_seperator_arr[0])
                         self.key_word_counter.append(1)
+                        self.word_count += 1
                     word_seperator_arr.pop(0)
                 else:
                     if word_seperator_arr[0].isalpha():
                         self.key_word_counter[self.key_word_store.index(word_seperator_arr[0])] += 1
+                        self.word_count += 1
                     word_seperator_arr.pop(0)
                     
     def web_surf(self):
@@ -59,9 +62,15 @@ class scraper:
                     self.URL_holder.append(link_tag_string[index_href:closing_mark:])
                     self.visited.append(link_tag_string[index_href:closing_mark:])
     
+    def word_amount_finder(self, word):
+        for i in range(scraper.word_count - 1):
+            if scraper.key_word_store[i] == word:
+                return (f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
+
+    
 
 
-scraper = scraper("https://dragonball.fandom.com/wiki/Main_Page")
+scraper = scraper("https://genshin-impact.fandom.com/wiki/Genshin_Impact_Wiki")
 scraper.keyword_finder()
 scraper.web_surf()
 
@@ -77,5 +86,5 @@ while len(scraper.URL_holder) != 0:
     scraper.keyword_finder()
     scraper.web_surf()
 
-scraper.keyword_printer()
+return scraper.keyword_printer()
 #print(soup)
