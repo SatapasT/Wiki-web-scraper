@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import re
 from time import sleep
 from alive_progress import alive_bar
-
+import os
 
 class scraper:
 
@@ -17,9 +17,30 @@ class scraper:
         self.URL_holder = []
         self.word_count = 0
         string_URL = str(URL)
-        starting_index = string_URL.find("https://")
-        ending_index = string_URL.find("/wiki/") + 6
-        self.main_webaddress = string_URL[starting_index:ending_index]
+        self.main_webaddress = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + 6]
+
+    def setup(self):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print(f"Scraping all data from {scraper.main_webaddress}!")
+        counter = 1
+        print("Starting the loop!")
+        print()
+
+        while len(scraper.URL_holder) != 0:
+            if counter%10 == 0:
+                print(f"Surfed through {counter} webs!",end="\r")
+            counter += 1
+            self.update_soup(scraper.URL_holder[0])
+            self.URL_holder.pop(0)
+            self.web_surf()
+        print(f"Surfed through {counter} total webs! \n")
+        print(f"Analyzing the web!")
+        with alive_bar(len(scraper.visited)+1) as bar:
+            bar(0, skipped=True)
+            for i in range(0, len(scraper.visited)):
+                self.update_soup(scraper.visited[i])
+                self.keyword_finder()
+                bar()
     
     def update_soup(self,URL):
         self.page = requests.get(URL)
@@ -69,26 +90,6 @@ class scraper:
         for i in range(len(self.key_word_store)):
             if str(scraper.key_word_store[i]) == word:
                 return (f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
-    
-    def setup(self):
-        print(scraper.main_webaddress)
-        counter = 1
-        print("Starting the loop!")
-
-        while len(scraper.URL_holder) != 0:
-            if counter%10 == 0:
-                print(f"Surfed through {counter} webs!")
-            counter += 1
-            self.update_soup(scraper.URL_holder[0])
-            self.URL_holder.pop(0)
-            self.web_surf()
-
-        with alive_bar(len(scraper.visited)+1) as bar:
-            bar(0, skipped=True)
-            for i in range(0, len(scraper.visited)):
-                self.update_soup(scraper.visited[i])
-                self.keyword_finder()
-                bar()
 
 scraper = scraper("https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki")
 scraper.keyword_finder()
