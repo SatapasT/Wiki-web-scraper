@@ -1,8 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+from time import sleep
+from alive_progress import alive_bar
+
 
 class scraper:
+
     def __init__(self, URL):
         self.page = requests.get(URL)
         self.soup = BeautifulSoup(self.page.content, "html.parser")
@@ -12,7 +16,6 @@ class scraper:
         self.visited.append(URL)
         self.URL_holder = []
         self.word_count = 0
-        
         string_URL = str(URL)
         starting_index = string_URL.find("https://")
         ending_index = string_URL.find("/wiki/") + 6
@@ -63,28 +66,38 @@ class scraper:
                     self.visited.append(link_tag_string[index_href:closing_mark:])
     
     def word_amount_finder(self, word):
-        for i in range(scraper.word_count - 1):
-            if scraper.key_word_store[i] == word:
+        for i in range(len(self.key_word_store)):
+            if str(scraper.key_word_store[i]) == word:
                 return (f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
-
     
+    def setup(self):
+        print(scraper.main_webaddress)
+        counter = 1
+        print("Starting the loop!")
 
+        while len(scraper.URL_holder) != 0:
+            if counter%10 == 0:
+                print(f"Surfed through {counter} webs!")
+            counter += 1
+            self.update_soup(scraper.URL_holder[0])
+            self.URL_holder.pop(0)
+            self.web_surf()
 
-scraper = scraper("https://genshin-impact.fandom.com/wiki/Genshin_Impact_Wiki")
+        with alive_bar(len(scraper.visited)+1) as bar:
+            bar(0, skipped=True)
+            for i in range(0, len(scraper.visited)):
+                self.update_soup(scraper.visited[i])
+                self.keyword_finder()
+                bar()
+
+scraper = scraper("https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki")
 scraper.keyword_finder()
 scraper.web_surf()
 
-print(scraper.main_webaddress)
-counter = 0
-print("Starting the loop!")
-while len(scraper.URL_holder) != 0:
-    if counter%10 == 0:
-        print(f"I am running and not dead! : {len(scraper.URL_holder)}")
-    counter += 1
-    scraper.update_soup(scraper.URL_holder[0])
-    scraper.URL_holder.pop(0)
-    scraper.keyword_finder()
-    scraper.web_surf()
+scraper.setup()
 
-return scraper.keyword_printer()
+
+
+
+print(scraper.word_amount_finder("sukuna"))
 #print(soup)
