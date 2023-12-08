@@ -4,6 +4,11 @@ import re
 from time import sleep
 from alive_progress import alive_bar
 import os
+import random
+import sys
+
+CURSOR_UP_ONE = '\x1b[1A' 
+ERASE_LINE = '\x1b[2K' 
 
 class scraper:
 
@@ -20,19 +25,38 @@ class scraper:
         self.main_webaddress = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + 6]
 
     def setup(self):
+        self.web_surf()
+        self.data_collector()
+
+    def partition(word_count_arr,word_store_arr, left, right):
+        
+        pivot_location = random.randint(left,right)
+        pivot = word_count_arr[pivot_location]
+        i = left - 1
+
+        for j in range(left,right):
+            if word_count_arr[j] <= pivot:
+                pass
+
+
+    def data_collector(self):
         os.system('cls' if os.name == 'nt' else 'clear')
         print(f"Scraping all data from {scraper.main_webaddress}!")
         counter = 1
-        print("Starting the loop!")
-        print()
+        print("Starting the loop!","\n","\n")
 
         while len(scraper.URL_holder) != 0:
-            if counter%10 == 0:
-                print(f"Surfed through {counter} webs!",end="\r")
+            progress_bar = "-" * (counter % 10)
+            print(f"{progress_bar:<10}", end="\r")
+            if counter % 10 == 0:
+                delete_above_print()
+                print(f"Surfed through {counter} webs!", end="\r")
+                print()
             counter += 1
             self.update_soup(scraper.URL_holder[0])
             self.URL_holder.pop(0)
             self.web_surf()
+        delete_above_print()
         print(f"Surfed through {counter} total webs! \n")
         print(f"Analyzing the web!")
         with alive_bar(len(scraper.visited)+1) as bar:
@@ -91,9 +115,13 @@ class scraper:
             if str(scraper.key_word_store[i]) == word:
                 return (f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
 
+def delete_above_print():
+    cursor_up_one = '\x1b[1A' 
+    erase_print = '\x1b[2K' 
+    sys.stdout.write(cursor_up_one) 
+    sys.stdout.write(erase_print)
+    
 scraper = scraper("https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki")
-scraper.keyword_finder()
-scraper.web_surf()
 
 scraper.setup()
 
