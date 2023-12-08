@@ -56,8 +56,8 @@ class scraper:
             self.update_soup(scraper.URL_holder[0])
             self.URL_holder.pop(0)
             self.web_surf()
+        print(f"Surfed through {counter} total webs! \n",end="\r")
         delete_above_print()
-        print(f"Surfed through {counter} total webs! \n")
         print(f"Analyzing the web!")
         with alive_bar(len(scraper.visited)+1) as bar:
             bar(0, skipped=True)
@@ -116,8 +116,8 @@ class scraper:
                 return (f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
 
 def delete_above_print():
-    cursor_up_one = '\x1b[1A' 
-    erase_print = '\x1b[2K' 
+    cursor_up_one = "\x1b[1A" 
+    erase_print = "\x1b[2K"
     sys.stdout.write(cursor_up_one) 
     sys.stdout.write(erase_print)
     
