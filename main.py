@@ -28,15 +28,6 @@ class scraper:
         self.web_surf()
         self.data_collector()
 
-    def partition(word_count_arr,word_store_arr, left, right):
-        
-        pivot_location = random.randint(left,right)
-        pivot = word_count_arr[pivot_location]
-        i = left - 1
-
-        for j in range(left,right):
-            if word_count_arr[j] <= pivot:
-                pass
 
 
     def data_collector(self):
@@ -70,8 +61,10 @@ class scraper:
         self.page = requests.get(URL)
         self.soup = BeautifulSoup(self.page.content, "html.parser")
     
-    def keyword_printer(self):
-        for i in range(len(scraper.key_word_store)):
+    def keyword_printer(self,n=None):
+        if n == None:
+            n = len(scraper.key_word_store)
+        for i in range(n):
             print(f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
 
     def keyword_finder(self):
@@ -121,12 +114,24 @@ def delete_above_print():
     sys.stdout.write(cursor_up_one) 
     sys.stdout.write(erase_print)
     
-scraper = scraper("https://jujutsu-kaisen.fandom.com/wiki/Jujutsu_Kaisen_Wiki")
-
+scraper = scraper("https://attackontitan.fandom.com/wiki/Attack_on_Titan_Wiki")
 scraper.setup()
 
 
+while True:
+    try:
+        user_input = int(input("Please input a command \n 1 : specific word count \n 2 : words count"))
+    except:
+        print("Invalid input")
+    if user_input == 1:
+        temp_input = input("Input the keyword you want \n")
+        print(scraper.word_amount_finder(temp_input))
+    elif user_input == 2:
+        scraper.keyword_printer()
+    user_input = input()
+    
 
 
-print(scraper.word_amount_finder("sukuna"))
+
+print(scraper.word_amount_finder("armin"))
 #print(soup)
