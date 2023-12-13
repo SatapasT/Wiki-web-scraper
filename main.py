@@ -6,9 +6,7 @@ from alive_progress import alive_bar
 import os
 import random
 import sys
-
-CURSOR_UP_ONE = '\x1b[1A' 
-ERASE_LINE = '\x1b[2K' 
+from googlesearch import search
 
 class scraper:
 
@@ -31,12 +29,12 @@ class scraper:
 
 
     def data_collector(self):
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print(f"Scraping all data from {scraper.main_webaddress}!")
+        clear_terminal()
+        print(f"Scraping all data from {self.main_webaddress}!")
         counter = 1
         print("Starting the loop!","\n","\n")
 
-        while len(scraper.URL_holder) != 0:
+        while len(self.URL_holder) != 0:
             progress_bar = "-" * (counter % 10)
             print(f"{progress_bar:<10}", end="\r")
             if counter % 10 == 0:
@@ -44,16 +42,16 @@ class scraper:
                 print(f"Surfed through {counter} webs!", end="\r")
                 print()
             counter += 1
-            self.update_soup(scraper.URL_holder[0])
+            self.update_soup(self.URL_holder[0])
             self.URL_holder.pop(0)
             self.web_surf()
         print(f"Surfed through {counter} total webs! \n",end="\r")
         delete_above_print()
         print(f"Analyzing the web!")
-        with alive_bar(len(scraper.visited)+1) as bar:
+        with alive_bar(len(self.visited)+1) as bar:
             bar(0, skipped=True)
-            for i in range(0, len(scraper.visited)):
-                self.update_soup(scraper.visited[i])
+            for i in range(0, len(self.visited)):
+                self.update_soup(self.visited[i])
                 self.keyword_finder()
                 bar()
     
@@ -63,9 +61,9 @@ class scraper:
     
     def keyword_printer(self,n=None):
         if n == None:
-            n = len(scraper.key_word_store)
+            n = len(self.key_word_store)
         for i in range(n):
-            print(f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
+            print(f"{self.key_word_store[i]} : {self.key_word_counter[i]}")
 
     def keyword_finder(self):
         span_finder = self.soup.find_all("span")
@@ -113,23 +111,64 @@ def delete_above_print():
     erase_print = "\x1b[2K"
     sys.stdout.write(cursor_up_one) 
     sys.stdout.write(erase_print)
-    
-scraper = scraper("https://attackontitan.fandom.com/wiki/Attack_on_Titan_Wiki")
-scraper.setup()
 
+def clear_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
+def google_search():
+    user_input = input("Type the name of the show you want to scrap! \n")
+    query = user_input + "wiki fandom"
+    for web in search(query, tld="co.in", num=5, stop=5, pause=2):
+        if "fandom" in web and "com":
+            return str(web)
+        else:
+            clear_terminal()
+            print("Couldn't find the wiki fandom for it! Have you spelt it correctly?")
+            return False
+
+def setup_scraper():
+    my_scraper = None
+    URL = google_search()
+    if URL == False:
+        google_search()
+    while my_scraper == None:
+        clear_terminal()
+        try:
+            user_input = int(input(f"Is this the correct URL? \n{URL} \nYes : 1 \nNo : 2 \n"))
+            if user_input == 1:
+                my_scraper = scraper(URL)
+                my_scraper.setup()
+                return my_scraper
+            elif user_input == 2:
+                clear_terminal()
+                URL = google_search()
+            else:
+                print("Invalid input! \n Yes : 1 \n No : 2 \n")
+        except:
+            print("Invalid input! \n")
+            URL = google_search()
+
+clear_terminal()
+scraper = setup_scraper()
 while True:
+    clear_terminal()
     try:
-        user_input = int(input("Please input a command \n 1 : specific word count \n 2 : words count"))
+        user_input = int(input("Please input a command \n 1 : specific word count \n 2 : words count \n"))
     except:
-        print("Invalid input")
+        print("Invalid input \n")
     if user_input == 1:
+        clear_terminal()
         temp_input = input("Input the keyword you want \n")
+        clear_terminal()
         print(scraper.word_amount_finder(temp_input))
     elif user_input == 2:
+        clear_terminal()
         scraper.keyword_printer()
-    user_input = input()
-    
+    else:
+        print("invalid input")
+    input("Press enter to reload!")
+    clear_terminal()
+
 
 
 
