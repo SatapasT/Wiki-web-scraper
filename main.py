@@ -17,7 +17,7 @@ class Scraper:
         self.URL_holder = []
         self.word_count = 0
         string_URL = str(URL)
-        self.main_webaddress = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
+        self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
 
     def setup(self):
         self.web_surf()
@@ -25,7 +25,7 @@ class Scraper:
 
     def data_collector(self):
         clear_terminal()
-        print(f"Scraping all data from {self.main_webaddress}!")
+        print(f"Scraping all data from {self.main_web_address}!")
         counter = 1
         print("Starting the loop!","\n","\n")
         while len(self.URL_holder) != 0:
@@ -64,29 +64,29 @@ class Scraper:
         for span_finder in span_finder:
             word = span_finder.get_text()
             position_counter = 0
-            word_seperator_arr = []
+            word_separator_arr = []
             for i in range(len(word)):
                 if word[i] == " ":
-                    word_seperator_arr.append(word[position_counter:i].lower())
+                    word_separator_arr.append(word[position_counter:i].lower())
                     position_counter = i+1
-            while len(word_seperator_arr) != 0:
-                if word_seperator_arr[0] not in self.key_word_store:
-                    if word_seperator_arr[0].isalpha():
-                        self.key_word_store.append(word_seperator_arr[0])
+            while len(word_separator_arr) != 0:
+                if word_separator_arr[0] not in self.key_word_store:
+                    if word_separator_arr[0].isalpha():
+                        self.key_word_store.append(word_separator_arr[0])
                         self.key_word_counter.append(1)
                         self.word_count += 1
-                    word_seperator_arr.pop(0)
+                    word_separator_arr.pop(0)
                 else:
-                    if word_seperator_arr[0].isalpha():
-                        self.key_word_counter[self.key_word_store.index(word_seperator_arr[0])] += 1
+                    if word_separator_arr[0].isalpha():
+                        self.key_word_counter[self.key_word_store.index(word_separator_arr[0])] += 1
                         self.word_count += 1
-                    word_seperator_arr.pop(0)
+                    word_separator_arr.pop(0)
                     
     def web_surf(self):
         web_finder = self.soup.find_all("a")
         for web_finder in web_finder:
             link_tag_string = str(web_finder)
-            if self.main_webaddress in link_tag_string:
+            if self.main_web_address in link_tag_string:
                 index_href = link_tag_string.find('href="') + 6
                 closing_mark = index_href
                 while link_tag_string[closing_mark] != '"':
@@ -137,7 +137,10 @@ def setup_scraper():
             else:
                 print("Invalid input! \n Yes : 1 \n No : 2 \n")
         except:
+            clear_terminal()
             print("Invalid input! \n")
+            input("Press enter reload!")
+            clear_terminal()
             URL = google_search()
 
 clear_terminal()
@@ -151,9 +154,9 @@ while True:
         print("Invalid input \n")
     if user_input == 1:
         clear_terminal()
-        temp_input = input("Input the keyword you want \n")
+        word_input = input("Input the keyword\n")
         clear_terminal()
-        print(scraper_instance.word_amount_finder(temp_input))
+        print(scraper_instance.word_amount_finder(word_input))
     elif user_input == 2:
         clear_terminal()
         scraper_instance.keyword_printer()
