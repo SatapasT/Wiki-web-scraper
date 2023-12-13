@@ -1,14 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-import re
-from time import sleep
 from alive_progress import alive_bar
 import os
-import random
 import sys
 from googlesearch import search
 
-class scraper:
+class Scraper:
 
     def __init__(self, URL):
         self.page = requests.get(URL)
@@ -20,20 +17,17 @@ class scraper:
         self.URL_holder = []
         self.word_count = 0
         string_URL = str(URL)
-        self.main_webaddress = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + 6]
+        self.main_webaddress = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
 
     def setup(self):
         self.web_surf()
         self.data_collector()
-
-
 
     def data_collector(self):
         clear_terminal()
         print(f"Scraping all data from {self.main_webaddress}!")
         counter = 1
         print("Starting the loop!","\n","\n")
-
         while len(self.URL_holder) != 0:
             progress_bar = "-" * (counter % 10)
             print(f"{progress_bar:<10}", end="\r")
@@ -103,8 +97,8 @@ class scraper:
     
     def word_amount_finder(self, word):
         for i in range(len(self.key_word_store)):
-            if str(scraper.key_word_store[i]) == word:
-                return (f"{scraper.key_word_store[i]} : {scraper.key_word_counter[i]}")
+            if str(self.key_word_store[i]) == word:
+                return (f"{self.key_word_store[i]} : {self.key_word_counter[i]}")
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -123,20 +117,18 @@ def google_search():
             return str(web)
         else:
             clear_terminal()
-            print("Couldn't find the wiki fandom for it! Have you spelt it correctly?")
-            return False
+            print("Couldn't find the wiki fandom for it! Have you spelt it correctly? \n")
+            google_search()
 
 def setup_scraper():
     my_scraper = None
     URL = google_search()
-    if URL == False:
-        google_search()
     while my_scraper == None:
         clear_terminal()
         try:
             user_input = int(input(f"Is this the correct URL? \n{URL} \nYes : 1 \nNo : 2 \n"))
             if user_input == 1:
-                my_scraper = scraper(URL)
+                my_scraper = Scraper(URL)
                 my_scraper.setup()
                 return my_scraper
             elif user_input == 2:
@@ -149,28 +141,22 @@ def setup_scraper():
             URL = google_search()
 
 clear_terminal()
-scraper = setup_scraper()
+scraper_instance = setup_scraper()
+
 while True:
     clear_terminal()
     try:
         user_input = int(input("Please input a command \n 1 : specific word count \n 2 : words count \n"))
-    except:
+    except ValueError:
         print("Invalid input \n")
     if user_input == 1:
         clear_terminal()
         temp_input = input("Input the keyword you want \n")
         clear_terminal()
-        print(scraper.word_amount_finder(temp_input))
+        print(scraper_instance.word_amount_finder(temp_input))
     elif user_input == 2:
         clear_terminal()
-        scraper.keyword_printer()
+        scraper_instance.keyword_printer()
     else:
-        print("invalid input")
+        print("Invalid input")
     input("Press enter to reload!")
-    clear_terminal()
-
-
-
-
-print(scraper.word_amount_finder("armin"))
-#print(soup)
