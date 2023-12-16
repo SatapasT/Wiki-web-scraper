@@ -48,7 +48,7 @@ class Scraper:
                 self.update_soup(self.visited[i])
                 self.keyword_finder()
                 bar()
-    
+
     def update_soup(self,URL):
         self.page = requests.get(URL)
         self.soup = BeautifulSoup(self.page.content, "html.parser")
@@ -109,6 +109,40 @@ def delete_above_print():
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    middle = len(arr)//2
+    left = arr[0:middle]
+    right = arr[middle:len(arr)+1]
+    
+    left_sorted = merge_sort(left)
+    right_sorted = merge_sort(right)
+
+    return merge(left_sorted,right_sorted)
+
+def merge(left,right):
+    sorted = []
+    while len(left) > 0 or len(right) > 0:
+        print(left,right)
+        if len(left) > 0 and len(right) > 0:
+            if left[0] >= right[0]:
+                sorted.append(left[0])
+                left.pop(0)
+            elif left[0] <= right[0]:
+                sorted.append(right[0])
+                right.pop(0)
+        elif len(left) > 0:
+            while len(left) > 0:
+                sorted.append(left[0])
+                left.pop(0)
+        else:
+            while len(right) > 0:
+                sorted.append(right[0])
+                right.pop(0)
+    return sorted
+
+
 def google_search():
     user_input = input("Type the name of the show you want to scrap! \n")
     query = user_input + "wiki fandom"
@@ -143,7 +177,12 @@ def setup_scraper():
             clear_terminal()
             URL = google_search()
 
-clear_terminal()
+
+arr = [5, 2, 8, 1, 7, 4, 6, 3]
+print(merge_sort(arr))
+input()
+
+#clear_terminal()
 scraper_instance = setup_scraper()
 
 while True:
