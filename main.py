@@ -22,6 +22,7 @@ class Scraper:
     def setup(self):
         self.web_surf()
         self.data_collector()
+        self.sort_counter()
 
     def data_collector(self):
         clear_terminal()
@@ -94,11 +95,15 @@ class Scraper:
                 if link_tag_string[index_href:closing_mark:] not in self.visited:
                     self.URL_holder.append(link_tag_string[index_href:closing_mark:])
                     self.visited.append(link_tag_string[index_href:closing_mark:])
-    
+
     def word_amount_finder(self, word):
         for i in range(len(self.key_word_store)):
             if str(self.key_word_store[i]) == word:
                 return (f"{self.key_word_store[i]} : {self.key_word_counter[i]}")
+            
+    def sort_counter(self):
+        self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
+
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -109,38 +114,47 @@ def delete_above_print():
 def clear_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def merge_sort(arr):
+def merge_sort(arr,arr2):
     if len(arr) <= 1:
-        return arr
+        return arr,arr2
     middle = len(arr)//2
     left = arr[0:middle]
     right = arr[middle:len(arr)+1]
-    
-    left_sorted = merge_sort(left)
-    right_sorted = merge_sort(right)
+    left2 = arr2[0:middle]
+    right2 = arr2[middle:len(arr)+1]
+    left_sorted,left_sorted2 = merge_sort(left,left2)
+    right_sorted,right_sorted2 = merge_sort(right,right2)
 
-    return merge(left_sorted,right_sorted)
+    return merge(left_sorted,left_sorted2,right_sorted,right_sorted2)
 
-def merge(left,right):
+def merge(left,left2,right,right2):
     sorted = []
+    sorted2 = []
     while len(left) > 0 or len(right) > 0:
-        print(left,right)
         if len(left) > 0 and len(right) > 0:
             if left[0] >= right[0]:
                 sorted.append(left[0])
                 left.pop(0)
+                sorted2.append(left2[0])
+                left2.pop(0)
             elif left[0] <= right[0]:
                 sorted.append(right[0])
                 right.pop(0)
+                sorted2.append(right2[0])
+                right2.pop(0)
         elif len(left) > 0:
             while len(left) > 0:
                 sorted.append(left[0])
                 left.pop(0)
+                sorted2.append(left2[0])
+                left2.pop(0)
         else:
             while len(right) > 0:
                 sorted.append(right[0])
                 right.pop(0)
-    return sorted
+                sorted2.append(right2[0])
+                right2.pop(0)
+    return (sorted, sorted2)
 
 
 def google_search():
@@ -171,18 +185,14 @@ def setup_scraper():
             else:
                 print("Invalid input! \n Yes : 1 \n No : 2 \n")
         except:
-            clear_terminal()
+            #clear_terminal()
             print("Invalid input! \n")
             input("Press enter reload!")
             clear_terminal()
             URL = google_search()
 
 
-arr = [5, 2, 8, 1, 7, 4, 6, 3]
-print(merge_sort(arr))
-input()
-
-#clear_terminal()
+clear_terminal()
 scraper_instance = setup_scraper()
 
 while True:
