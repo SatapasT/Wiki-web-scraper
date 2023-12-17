@@ -53,12 +53,6 @@ class Scraper:
     def update_soup(self,URL):
         self.page = requests.get(URL)
         self.soup = BeautifulSoup(self.page.content, "html.parser")
-    
-    def keyword_printer(self,n=None):
-        if n == None:
-            n = len(self.key_word_store)
-        for i in range(n):
-            print(f"{self.key_word_store[i]} : {self.key_word_counter[i]}")
 
     def keyword_finder(self):
         span_finder = self.soup.find_all("span")
@@ -95,6 +89,17 @@ class Scraper:
                 if link_tag_string[index_href:closing_mark:] not in self.visited:
                     self.URL_holder.append(link_tag_string[index_href:closing_mark:])
                     self.visited.append(link_tag_string[index_href:closing_mark:])
+                
+    def keyword_printer(self,start=None,end=None):
+        if start < 0:
+            start = len(self.key_word_store) - 10
+            end = len(self.key_word_store)
+        if end > len(self.key_word_store):
+            start = 0
+            end = 10
+        for i in range(start,end):
+            print(f"{i + 1}) {self.key_word_store[i]} : {self.key_word_counter[i]}")
+        return  start,end
 
     def word_amount_finder(self, word):
         for i in range(len(self.key_word_store)):
@@ -185,7 +190,7 @@ def setup_scraper():
             else:
                 print("Invalid input! \n Yes : 1 \n No : 2 \n")
         except:
-            #clear_terminal()
+            clear_terminal()
             print("Invalid input! \n")
             input("Press enter reload!")
             clear_terminal()
@@ -198,7 +203,7 @@ scraper_instance = setup_scraper()
 while True:
     clear_terminal()
     try:
-        user_input = int(input("Please input a command \n 1 : specific word count \n 2 : words count \n"))
+        user_input = int(input("Please input a command \n  : specific word count \n2 : words count \n"))
     except ValueError:
         print("Invalid input \n")
     if user_input == 1:
@@ -208,7 +213,26 @@ while True:
         print(scraper_instance.word_amount_finder(word_input))
     elif user_input == 2:
         clear_terminal()
-        scraper_instance.keyword_printer()
+        while user_input != 3:
+            user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : exit \n"))
+            start, end = scraper_instance.keyword_printer(0,10)
+            try:
+                if user_input == 1:
+                    start += 10
+                    end += 10
+                elif user_input == 2:
+                    start -= 10
+                    end -= 10
+                elif user_input == 3:
+                    pass
+                else:
+                    print("Invalid input \n")
+                    input("Press enter to reload!")
+            except:
+                print("Invalid input \n")
+                input("Press enter to reload!")
+            clear_terminal()
+    
     else:
         print("Invalid input")
     input("Press enter to reload!")
