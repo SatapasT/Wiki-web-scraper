@@ -1,29 +1,31 @@
-# Wiki-web-scraper
-This Python program is a simple web scraper designed to extract and analyze textual data from Wiki fandom pages related to TV shows or other topics. It uses the BeautifulSoup library for HTML parsing, requests library for making HTTP requests, and the Googlesearch library for finding relevant Wikipedia pages.
+# Wiki Web Scraper
 
+Wiki Web Scraper is a Python program designed for extracting and analyzing textual data from Wiki Fandom pages, specifically those related to TV shows or other topics. It utilizes the BeautifulSoup library for HTML parsing, the requests library for making HTTP requests, and the Googlesearch library for finding relevant Wikipedia pages.
 
-# Features
-1) Data Collection: The program collects textual data from the provided Wikipedia page and its linked pages.
-2) Keyword Analysis: It identifies and counts the occurrences of individual words (excluding non-alphabetic characters) within the collected data.
-3) More will be added as I keep working on this!
+## Features
+1. **Data Collection:** The program retrieves textual data from the provided Wikipedia page and its linked pages.
+2. **Keyword Analysis:** It identifies and counts the occurrences of individual words (excluding non-alphabetic characters) within the collected data.
+3. **More to Come:** Stay tuned for additional features as the project continues to evolve!
 
+## Dependencies
+- [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/)
+- [Alive Progress](https://pypi.org/project/alive-progress/)
+- [Googlesearch](https://github.com/deedy5/googlesearch-python)
 
-# Dependencies
-- BeautifulSoup
-- Alive Progress
-- Googlesearch
+## Installation and Usage
+```bash
+pip install requests beautifulsoup4 alive-progress google
+```
 
+Run the script in a Python environment:
+```bash
+python main.py
+```
 
-# Install and run
-pip install requests beautifulsoup4 alive-progress google    
-  
-Run the script in a Python environment  
-python main.py  
+## Notes
+The program's execution time may vary depending on the size and structure of the Wikipedia page and its linked pages.
+Author
+This program was created by SatapasT.
 
-
-# Notes
-The program may take some time to complete, depending on the size and structure of the Wikipedia page and its linked pages
-
-
-This program was created by SatapasT  
 Happy Scrapping!
+
