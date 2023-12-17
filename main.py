@@ -23,6 +23,7 @@ class Scraper:
         self.web_surf()
         self.data_collector()
         self.sort_counter()
+        self.word_count = len(self.key_word_counter)
 
     def data_collector(self):
         clear_terminal()
@@ -69,12 +70,10 @@ class Scraper:
                     if word_separator_arr[0].isalpha():
                         self.key_word_store.append(word_separator_arr[0])
                         self.key_word_counter.append(1)
-                        self.word_count += 1
                     word_separator_arr.pop(0)
                 else:
                     if word_separator_arr[0].isalpha():
                         self.key_word_counter[self.key_word_store.index(word_separator_arr[0])] += 1
-                        self.word_count += 1
                     word_separator_arr.pop(0)
                     
     def web_surf(self):
@@ -92,9 +91,9 @@ class Scraper:
                 
     def keyword_printer(self,start=None,end=None):
         if start < 0:
-            start = len(self.key_word_store) - 10
-            end = len(self.key_word_store)
-        if end > len(self.key_word_store):
+            start = self.word_count - 10
+            end = self.word_count
+        if end > self.word_count:
             start = 0
             end = 10
         for i in range(start,end):
@@ -105,6 +104,7 @@ class Scraper:
         for i in range(len(self.key_word_store)):
             if str(self.key_word_store[i]) == word:
                 return (f"{self.key_word_store[i]} : {self.key_word_counter[i]}")
+        print(f"{word} wasn't found within the database!")
             
     def sort_counter(self):
         self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
@@ -203,7 +203,7 @@ scraper_instance = setup_scraper()
 while True:
     clear_terminal()
     try:
-        user_input = int(input("Please input a command \n  : specific word count \n2 : words count \n"))
+        user_input = int(input("Please input a command \n1 : specific word count \n2 : words count \n"))
     except ValueError:
         print("Invalid input \n")
     if user_input == 1:
@@ -213,9 +213,11 @@ while True:
         print(scraper_instance.word_amount_finder(word_input))
     elif user_input == 2:
         clear_terminal()
-        while user_input != 3:
-            user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : exit \n"))
-            start, end = scraper_instance.keyword_printer(0,10)
+        start = 0
+        end = 10
+        while user_input != 4:
+            start, end = scraper_instance.keyword_printer(start,end)
+            user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : exit \n"))
             try:
                 if user_input == 1:
                     start += 10
@@ -224,6 +226,17 @@ while True:
                     start -= 10
                     end -= 10
                 elif user_input == 3:
+                    clear_terminal()
+                    try:
+                        start = int(input("Input where you want to skip to\n")) - 1
+                        end = start + 10
+                        if start > scraper_instance.word_count or start < 0:
+                            print("Input out of bound!")
+                            input("Press enter to reload!")
+                    except:
+                        print("Invalid input \n")
+                        input("Press enter to reload!") 
+                elif user_input == 4:
                     pass
                 else:
                     print("Invalid input \n")
@@ -232,7 +245,6 @@ while True:
                 print("Invalid input \n")
                 input("Press enter to reload!")
             clear_terminal()
-    
     else:
         print("Invalid input")
     input("Press enter to reload!")
