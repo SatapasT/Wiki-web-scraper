@@ -10,7 +10,7 @@ Wiki Web Scraper is a Python program designed for extracting and analyzing textu
 ## Dependencies
 - [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/)
 - [Alive Progress](https://pypi.org/project/alive-progress/)
-- [Googlesearch](https://github.com/deedy5/googlesearch-python)
+- [Googlesearch](https://pypi.org/project/google/)
 
 ## Installation and Usage
 ```bash
