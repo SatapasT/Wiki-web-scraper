@@ -15,6 +15,7 @@ class Scraper:
         self.visited = []
         self.visited.append(URL)
         self.URL_holder = []
+        self.main_title = []
         self.word_count = 0
         string_URL = str(URL)
         self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
@@ -47,9 +48,18 @@ class Scraper:
         with alive_bar(len(self.visited)+1) as bar:
             bar(0, skipped=True)
             for i in range(0, len(self.visited)):
+                self.get_title()
                 self.update_soup(self.visited[i])
                 self.keyword_finder()
                 bar()
+
+    def get_title(self):
+        title_finder = self.soup.find_all('span', class_='mw-page-title-main')
+        if title_finder != []:
+            title_finder_string = str(title_finder)
+            index_span = title_finder_string.find('class="mw-page-title-main">') + len('class="mw-page-title-main">')
+            closing_span = title_finder_string.find("</span>")
+            self.main_title.append(title_finder_string[index_span:closing_span])
 
     def update_soup(self,URL):
         self.page = requests.get(URL)
@@ -81,7 +91,7 @@ class Scraper:
         for web_finder in web_finder:
             link_tag_string = str(web_finder)
             if self.main_web_address in link_tag_string:
-                index_href = link_tag_string.find('href="') + 6
+                index_href = link_tag_string.find('href="') + len('href="')
                 closing_mark = index_href
                 while link_tag_string[closing_mark] != '"':
                     closing_mark += 1
@@ -109,6 +119,9 @@ class Scraper:
     def sort_counter(self):
         self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
 
+    def main_title_printer(self):
+        for i in range(len(self.main_title)):
+            print(self.main_title[i])
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -191,7 +204,7 @@ def setup_scraper():
                 print("Invalid input! \n Yes : 1 \n No : 2 \n")
         except:
             clear_terminal()
-            print("Invalid input! \n")
+            print("Invalid input! \n")  
             input("Press enter reload!")
             clear_terminal()
             URL = google_search()
@@ -245,6 +258,8 @@ while True:
                 print("Invalid input \n")
                 input("Press enter to reload!")
             clear_terminal()
+    elif user_input == 3:
+        scraper_instance.main_title_printer()
     else:
         print("Invalid input")
     input("Press enter to reload!")
