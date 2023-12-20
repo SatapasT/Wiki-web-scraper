@@ -48,18 +48,18 @@ class Scraper:
         with alive_bar(len(self.visited)+1) as bar:
             bar(0, skipped=True)
             for i in range(0, len(self.visited)):
-                self.get_title()
+                self.get_title(self.visited[i])
                 self.update_soup(self.visited[i])
                 self.keyword_finder()
                 bar()
 
-    def get_title(self):
+    def get_title(self,URL):
         title_finder = self.soup.find_all('span', class_='mw-page-title-main')
         if title_finder != []:
             title_finder_string = str(title_finder)
             index_span = title_finder_string.find('class="mw-page-title-main">') + len('class="mw-page-title-main">')
             closing_span = title_finder_string.find("</span>")
-            self.main_title.append(title_finder_string[index_span:closing_span])
+            self.main_title.append([title_finder_string[index_span:closing_span],URL])
 
     def update_soup(self,URL):
         self.page = requests.get(URL)
@@ -121,7 +121,7 @@ class Scraper:
 
     def main_title_printer(self):
         for i in range(len(self.main_title)):
-            print(self.main_title[i])
+            print(self.main_title[i][0])
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -174,7 +174,6 @@ def merge(left,left2,right,right2):
                 right2.pop(0)
     return (sorted, sorted2)
 
-
 def google_search():
     user_input = input("Type the name of the show you want to scrap! \n")
     query = user_input + "wiki fandom"
@@ -213,53 +212,85 @@ def setup_scraper():
 clear_terminal()
 scraper_instance = setup_scraper()
 
-while True:
+def main():
     clear_terminal()
     try:
-        user_input = int(input("Please input a command \n1 : specific word count \n2 : words count \n"))
-    except ValueError:
-        print("Invalid input \n")
-    if user_input == 1:
-        clear_terminal()
-        word_input = input("Input the keyword\n")
-        clear_terminal()
-        print(scraper_instance.word_amount_finder(word_input))
-    elif user_input == 2:
-        clear_terminal()
-        start = 0
-        end = 10
-        while user_input != 4:
-            start, end = scraper_instance.keyword_printer(start,end)
-            user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : exit \n"))
-            try:
-                if user_input == 1:
-                    start += 10
-                    end += 10
-                elif user_input == 2:
-                    start -= 10
-                    end -= 10
-                elif user_input == 3:
-                    clear_terminal()
-                    try:
-                        start = int(input("Input where you want to skip to\n")) - 1
-                        end = start + 10
-                        if start > scraper_instance.word_count or start < 0:
-                            print("Input out of bound!")
-                            input("Press enter to reload!")
-                    except:
-                        print("Invalid input \n")
-                        input("Press enter to reload!") 
-                elif user_input == 4:
-                    pass
-                else:
-                    print("Invalid input \n")
-                    input("Press enter to reload!")
-            except:
-                print("Invalid input \n")
-                input("Press enter to reload!")
-            clear_terminal()
-    elif user_input == 3:
-        scraper_instance.main_title_printer()
-    else:
+        user_input = int(input("Please input a command \n1 : Title Data \n2 : Words data \n"))
+        if user_input == 1:
+            interface_title()
+        elif user_input == 2:
+            interface_word()
+        else:
+            print("Invalid input \n")
+    except:
         print("Invalid input")
     input("Press enter to reload!")
+    main()
+            
+
+def interface_title():
+    clear_terminal()
+    try:
+        user_input = int(input("Please input a command \n1 : Web Title\n"))
+        if user_input == 1:
+            clear_terminal()
+            scraper_instance.main_title_printer()
+        elif user_input == 2:
+            main()
+        else:
+            print("Invalid input!")
+    except:
+        print("Invalid input!")
+    input("\nPress enter to reload!")
+    interface_title()
+
+def interface_word():
+    clear_terminal()
+    try:
+        user_input = int(input("Please input a command \n1 : Words Count \n2 : Specific Word Count \n3 : Back\n"))
+        if user_input == 1:
+            clear_terminal()
+            start = 0
+            end = 10
+            while user_input != 4:
+                start, end = scraper_instance.keyword_printer(start,end)
+                user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : exit \n"))
+                try:
+                    if user_input == 1:
+                        start += 10
+                        end += 10
+                    elif user_input == 2:
+                        start -= 10
+                        end -= 10
+                    elif user_input == 3:
+                        clear_terminal()
+                        try:
+                            start = int(input("Input where you want to skip to\n")) - 1
+                            end = start + 10
+                            if start > scraper_instance.word_count or start < 0:
+                                print("Input out of bound!")
+                        except:
+                            print("Invalid input")
+                    elif user_input == 4:
+                        interface_word()
+                    else:
+                        print("Invalid input")
+                except:
+                    print("Invalid input")
+                clear_terminal()
+        if user_input == 2:
+            clear_terminal()
+            word_input = input("Input the keyword\n")
+            clear_terminal()
+            print(scraper_instance.word_amount_finder(word_input))
+        elif user_input == 3:
+            main()
+        else:
+            print("Invalid input")
+        
+    except:
+        print("Invalid input \n")
+    input("\nPress enter to reload!")
+    interface_word()
+
+main()
