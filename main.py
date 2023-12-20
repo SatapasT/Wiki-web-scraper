@@ -42,8 +42,8 @@ class Scraper:
             self.update_soup(self.URL_holder[0])
             self.URL_holder.pop(0)
             self.web_surf()
-        print(f"Surfed through {counter} total webs! \n",end="\r")
         delete_above_print()
+        print(f"Surfed through {counter} total webs! \n",end="\r")
         print(f"Analyzing the web!")
         with alive_bar(len(self.visited)+1) as bar:
             bar(0, skipped=True)
@@ -107,13 +107,13 @@ class Scraper:
             start = 0
             end = 10
         for i in range(start,end):
-            print(f"{i + 1}) {self.key_word_store[i]} : {self.key_word_counter[i]}")
+            print(f"{i + 1}) {self.key_word_store[i].capitalize()} : {self.key_word_counter[i]}")
         return  start,end
 
     def word_amount_finder(self, word):
         for i in range(len(self.key_word_store)):
             if str(self.key_word_store[i]) == word:
-                return (f"{self.key_word_store[i]} : {self.key_word_counter[i]}")
+                return (f"{self.key_word_store[i].capitalize()} : {self.key_word_counter[i]}")
         print(f"{word} wasn't found within the database!")
             
     def sort_counter(self):
