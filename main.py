@@ -16,7 +16,7 @@ class Scraper:
         self.visited.append(URL)
         self.URL_holder = []
         self.main_title = []
-        self.main_title_url = []
+        self.image_holder = []
         self.word_count = 0
         string_URL = str(URL)
         self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
@@ -51,9 +51,21 @@ class Scraper:
             bar(0, skipped=True)
             for i in range(0, len(self.visited)):
                 self.get_title(self.visited[i])
+                self.get_image(self.visited[i])
                 self.update_soup(self.visited[i])
                 self.keyword_finder()
                 bar()
+
+    def get_image(self,URL):
+        image_finder = self.soup.find_all('img')
+        image_finder_string = str(image_finder)
+        image_src = image_finder_string[image_finder_string.find('src="') + len('src="'):]
+        print(image_src)
+        image_src = image_src[:image_finder_string.find('"') + len('"')]
+        print(image_src)
+        input()
+        if image_src not in self.image_holder and image_src != []:
+            self.image_holder.append([image_src,URL])
 
     def get_title(self,URL):
         title_finder = self.soup.find_all('span', class_='mw-page-title-main')
@@ -131,6 +143,10 @@ class Scraper:
         for i in range(start,end):
             print(f"{i + 1}) {self.main_title[i][mode].capitalize()}")
         return start, end
+
+    def image_print(self):
+        for i in range(len(self.image_holder)):
+            print(self.image_holder[i][0])
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -218,9 +234,6 @@ def setup_scraper():
             URL = google_search()
 
 
-clear_terminal()
-scraper_instance = setup_scraper()
-
 def main():
     clear_terminal()
     try:
@@ -239,7 +252,7 @@ def main():
 def interface_title():
     clear_terminal()
     try:
-        user_input = int(input("Please input a command \n1 : Web Title\n"))
+        user_input = int(input("Please input a command \n1 : Web Title\n2 : Images\n3 : Exit"))
         if user_input == 1:
             clear_terminal()
             start = 0
@@ -281,13 +294,15 @@ def interface_title():
                     input("\nPress enter to reload!")
                 clear_terminal()
         elif user_input == 2:
+            clear_terminal()
+            scraper_instance.image_print()
+        elif user_input == 3:
             main()
         else:
             print("Invalid input!")
-            input("\nPress enter to reload!")
     except:
         print("Invalid input!")
-        input("\nPress enter to reload!")
+    input("\nPress enter to reload!")
     interface_title()
 
 def interface_word():
@@ -325,8 +340,8 @@ def interface_word():
                         print("Invalid input")
                         input("\nPress enter to reload!")
                 except:
-                    print("Invalid input")
                     input("\nPress enter to reload!")
+                    print("Invalid input")
                 clear_terminal()
         if user_input == 2:
             clear_terminal()
@@ -337,10 +352,12 @@ def interface_word():
             main()
         else:
             print("Invalid input")
-            input("\nPress enter to reload!")
-        
     except:
         print("Invalid input \n")
+    input("\nPress enter to reload!")
     interface_word()
 
+
+clear_terminal()
+scraper_instance = setup_scraper()
 main()
