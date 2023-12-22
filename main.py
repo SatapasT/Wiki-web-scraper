@@ -16,9 +16,11 @@ class Scraper:
         self.visited.append(URL)
         self.URL_holder = []
         self.main_title = []
+        self.main_title_url = []
         self.word_count = 0
         string_URL = str(URL)
         self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
+
 
     def setup(self):
         self.web_surf()
@@ -119,9 +121,16 @@ class Scraper:
     def sort_counter(self):
         self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
 
-    def main_title_printer(self):
-        for i in range(len(self.main_title)):
-            print(self.main_title[i][0])
+    def main_title_printer(self,start,end,mode):
+        if start < 0:
+            start = self.word_count - 10
+            end = self.word_count
+        if end > len(self.main_title):
+            start = 0
+            end = 10
+        for i in range(start,end):
+            print(f"{i + 1}) {self.main_title[i][mode].capitalize()}")
+        return start, end
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -203,7 +212,7 @@ def setup_scraper():
                 print("Invalid input! \n Yes : 1 \n No : 2 \n")
         except:
             clear_terminal()
-            print("Invalid input! \n")  
+            print("Invalid input!\n")  
             input("Press enter reload!")
             clear_terminal()
             URL = google_search()
@@ -226,7 +235,6 @@ def main():
         print("Invalid input")
     input("Press enter to reload!")
     main()
-            
 
 def interface_title():
     clear_terminal()
@@ -234,14 +242,52 @@ def interface_title():
         user_input = int(input("Please input a command \n1 : Web Title\n"))
         if user_input == 1:
             clear_terminal()
-            scraper_instance.main_title_printer()
+            start = 0
+            end = 10
+            mode = 0
+            while user_input != 5:
+                try:
+                    start, end = scraper_instance.main_title_printer(start,end,mode)
+                    user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : change content mode \n5 : exit \n"))
+                    if user_input == 1:
+                        start += 10
+                        end += 10
+                    elif user_input == 2:
+                        start -= 10
+                        end -=10
+                    elif user_input == 3:
+                        clear_terminal()
+                        try:
+                            start = int(input("Input where you want to skip to\n")) - 1
+                            end = start + 10
+                            if start > len(scraper_instance.main_title) or start < 0:
+                                print("Input out of bound!")
+                                input("\nPress enter to reload!")
+                        except:
+                            print("Invalid input")
+                            input("\nPress enter to reload!")
+                    elif user_input == 4:
+                        if mode == 0:
+                            mode = 1
+                        else:
+                            mode = 0
+                    elif user_input == 5:
+                        pass
+                    else:
+                        print("Invalid input")
+                        input("\nPress enter to reload!")
+                except:
+                    print("Invalid input")
+                    input("\nPress enter to reload!")
+                clear_terminal()
         elif user_input == 2:
             main()
         else:
             print("Invalid input!")
+            input("\nPress enter to reload!")
     except:
         print("Invalid input!")
-    input("\nPress enter to reload!")
+        input("\nPress enter to reload!")
     interface_title()
 
 def interface_word():
@@ -269,14 +315,18 @@ def interface_word():
                             end = start + 10
                             if start > scraper_instance.word_count or start < 0:
                                 print("Input out of bound!")
+                                input("\nPress enter to reload!")
                         except:
                             print("Invalid input")
+                            input("\nPress enter to reload!")
                     elif user_input == 4:
                         interface_word()
                     else:
                         print("Invalid input")
+                        input("\nPress enter to reload!")
                 except:
                     print("Invalid input")
+                    input("\nPress enter to reload!")
                 clear_terminal()
         if user_input == 2:
             clear_terminal()
@@ -287,10 +337,10 @@ def interface_word():
             main()
         else:
             print("Invalid input")
+            input("\nPress enter to reload!")
         
     except:
         print("Invalid input \n")
-    input("\nPress enter to reload!")
     interface_word()
 
 main()
