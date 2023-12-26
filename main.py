@@ -58,14 +58,15 @@ class Scraper:
 
     def get_image(self,URL):
         image_finder = self.soup.find_all('img')
-        image_finder_string = str(image_finder)
-        image_src = image_finder_string[image_finder_string.find('src="') + len('src="'):]
-        print(image_src)
-        image_src = image_src[:image_finder_string.find('"') + len('"')]
-        print(image_src)
-        input()
-        if image_src not in self.image_holder and image_src != []:
-            self.image_holder.append([image_src,URL])
+        for image_embedding in image_finder:
+            image_finder_string = str(image_embedding)
+            index_image = image_finder_string.find('src="') + len('src="')
+            closing_image = index_image
+            while image_finder_string[closing_image] != '"':
+                closing_image += 1
+            image_URL = image_finder_string[index_image:closing_image]
+            if image_URL not in self.image_holder and image_URL != []:
+                self.image_holder.append([image_URL,URL])
 
     def get_title(self,URL):
         title_finder = self.soup.find_all('span', class_='mw-page-title-main')
