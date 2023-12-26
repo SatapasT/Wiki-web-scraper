@@ -4,6 +4,8 @@ from alive_progress import alive_bar
 import os
 import sys
 from googlesearch import search
+import urllib.request 
+from PIL import Image 
 
 class Scraper:
 
@@ -119,6 +121,7 @@ class Scraper:
                     self.URL_holder.append(link_tag_string[index_href:closing_mark:])
                     self.visited.append(link_tag_string[index_href:closing_mark:])
                 
+                
     def keyword_printer(self,start=None,end=None):
         if start < 0:
             start = self.word_count - 10
@@ -141,8 +144,8 @@ class Scraper:
 
     def main_title_printer(self,start,end,mode):
         if start < 0:
-            start = self.word_count - 10
-            end = self.word_count
+            start = len(self.main_title) - 10
+            end = len(self.main_title)
         if end > len(self.main_title):
             start = 0
             end = 10
@@ -150,9 +153,16 @@ class Scraper:
             print(f"{i + 1}) {self.main_title[i][mode].capitalize()}")
         return start, end
 
-    def image_print(self):
-        for i in range(len(self.image_holder)):
-            print(self.image_holder[i][0])
+    def image_print(self,start,end,mode):
+        if start < 0:
+            start = len(self.image_holder) - 10
+            end = len(self.image_holder)
+        if end > len(self.main_title):
+            start = 0
+            end = 10
+        for i in range(start,end):
+            print(f"{i + 1}) {self.image_holder[i][mode]}")
+        return start, end
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -301,6 +311,44 @@ def interface_title():
                 clear_terminal()
         elif user_input == 2:
             clear_terminal()
+            start = 0
+            end = 10
+            mode = 0
+            while user_input != 5:
+                try:
+                    start, end = scraper_instance.image_print(start,end,mode)
+                    user_input = int(input("\nPlease input a command \n1 : next 10 image \n2 : last 10 image \n3 : skip to \n4 : change content mode \n5 : exit \n"))
+                    if user_input == 1:
+                        start += 10
+                        end += 10
+                    elif user_input == 2:
+                        start -= 10
+                        end -=10
+                    elif user_input == 3:
+                        clear_terminal()
+                        try:
+                            start = int(input("Input where you want to skip to\n")) - 1
+                            end = start + 10
+                            if start > len(scraper_instance.main_title) or start < 0:
+                                print("Input out of bound!")
+                                input("\nPress enter to reload!")
+                        except:
+                            print("Invalid input")
+                            input("\nPress enter to reload!")
+                    elif user_input == 4:
+                        if mode == 0:
+                            mode = 1
+                        else:
+                            mode = 0
+                    elif user_input == 5:
+                        pass
+                    else:
+                        print("Invalid input")
+                        input("\nPress enter to reload!")
+                except:
+                    print("Invalid input")
+                    input("\nPress enter to reload!")
+                clear_terminal()    
             scraper_instance.image_print()
         elif user_input == 3:
             main()
@@ -367,3 +415,7 @@ def interface_word():
 clear_terminal()
 scraper_instance = setup_scraper()
 main()
+
+#data = requests.get(image_URL).content
+#with open(f'{image_name}.jpg', 'wb') as file:
+#file.write(data)
