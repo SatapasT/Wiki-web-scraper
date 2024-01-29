@@ -23,7 +23,6 @@ class Scraper:
         string_URL = str(URL)
         self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
 
-
     def setup(self):
         self.web_surf()
         self.data_collector()
@@ -32,9 +31,11 @@ class Scraper:
 
     def data_collector(self):
         clear_terminal()
+
         print(f"Scraping all data from {self.main_web_address}!")
         counter = 1
         print("Starting the loop!","\n","\n")
+
         while len(self.URL_holder) != 0:
             progress_bar = "-" * (counter % 10)
             print(f"{progress_bar:<10}", end="\r")
@@ -46,9 +47,11 @@ class Scraper:
             self.update_soup(self.URL_holder[0])
             self.URL_holder.pop(0)
             self.web_surf()
+
         delete_above_print()
         print(f"Surfed through {counter} total webs! \n",end="\r")
         print(f"Analyzing the web!")
+
         with alive_bar(len(self.visited)+1) as bar:
             bar(0, skipped=True)
             for i in range(0, len(self.visited)):
@@ -60,23 +63,29 @@ class Scraper:
 
     def get_image(self,URL):
         image_finder = self.soup.find_all('img')
+
         for image_embedding in image_finder:
             image_embedding_string = str(image_embedding)
             index_image_name = image_embedding_string.find('img alt="') + len('img alt="')
             closing_image_name = index_image_name
+
             while image_embedding_string[closing_image_name] != '"':
                 closing_image_name += 1
+    
             image_name = image_embedding_string[index_image_name:closing_image_name]
             index_image_src = image_embedding_string.find('src="') + len('src="')
             closing_image_src = index_image_src
+
             while image_embedding_string[closing_image_src] != '"':
                 closing_image_src += 1
+
             image_URL = image_embedding_string[index_image_src:closing_image_src]
             if image_URL not in self.image_holder and image_URL != []:
                 self.image_holder.append([image_name,image_URL,URL])
 
     def get_title(self,URL):
         title_finder = self.soup.find_all('span', class_='mw-page-title-main')
+
         if title_finder != []:
             title_finder_string = str(title_finder)
             index_span = title_finder_string.find('class="mw-page-title-main">') + len('class="mw-page-title-main">')
@@ -89,6 +98,7 @@ class Scraper:
 
     def keyword_finder(self):
         span_finder = self.soup.find_all("span")
+
         for span_finder in span_finder:
             word = span_finder.get_text()
             position_counter = 0
@@ -97,12 +107,14 @@ class Scraper:
                 if word[i] == " ":
                     word_separator_arr.append(word[position_counter:i].lower())
                     position_counter = i+1
+
             while len(word_separator_arr) != 0:
                 if word_separator_arr[0] not in self.key_word_store:
                     if word_separator_arr[0].isalpha():
                         self.key_word_store.append(word_separator_arr[0])
                         self.key_word_counter.append(1)
                     word_separator_arr.pop(0)
+
                 else:
                     if word_separator_arr[0].isalpha():
                         self.key_word_counter[self.key_word_store.index(word_separator_arr[0])] += 1
@@ -110,6 +122,7 @@ class Scraper:
                     
     def web_surf(self):
         web_finder = self.soup.find_all("a")
+
         for web_finder in web_finder:
             link_tag_string = str(web_finder)
             if self.main_web_address in link_tag_string:
@@ -117,6 +130,7 @@ class Scraper:
                 closing_mark = index_href
                 while link_tag_string[closing_mark] != '"':
                     closing_mark += 1
+
                 if link_tag_string[index_href:closing_mark:] not in self.visited:
                     self.URL_holder.append(link_tag_string[index_href:closing_mark:])
                     self.visited.append(link_tag_string[index_href:closing_mark:])
@@ -126,11 +140,14 @@ class Scraper:
         if start < 0:
             start = self.word_count - 10
             end = self.word_count
+
         if end > self.word_count:
             start = 0
             end = 10
+
         for i in range(start,end):
             print(f"{i + 1}) {self.key_word_store[i].capitalize()} : {self.key_word_counter[i]}")
+
         return  start,end
 
     def word_amount_finder(self, word):
@@ -146,22 +163,28 @@ class Scraper:
         if start < 0:
             start = len(self.main_title) - 10
             end = len(self.main_title)
+
         if end > len(self.main_title):
             start = 0
             end = 10
+
         for i in range(start,end):
             print(f"{i + 1}) {self.main_title[i][mode].capitalize()}")
+
         return start, end
 
     def image_print(self,start,end,mode):
         if start < 0:
             start = len(self.image_holder) - 10
             end = len(self.image_holder)
+
         if end > len(self.main_title):
             start = 0
             end = 10
+
         for i in range(start,end):
             print(f"{i + 1}) {self.image_holder[i][mode]}")
+
         return start, end
 
 def delete_above_print():
@@ -176,11 +199,14 @@ def clear_terminal():
 def merge_sort(arr,arr2):
     if len(arr) <= 1:
         return arr,arr2
+    
     middle = len(arr)//2
     left = arr[0:middle]
     right = arr[middle:len(arr)+1]
+
     left2 = arr2[0:middle]
     right2 = arr2[middle:len(arr)+1]
+
     left_sorted,left_sorted2 = merge_sort(left,left2)
     right_sorted,right_sorted2 = merge_sort(right,right2)
 
@@ -189,6 +215,7 @@ def merge_sort(arr,arr2):
 def merge(left,left2,right,right2):
     sorted = []
     sorted2 = []
+
     while len(left) > 0 or len(right) > 0:
         if len(left) > 0 and len(right) > 0:
             if left[0] >= right[0]:
@@ -196,23 +223,27 @@ def merge(left,left2,right,right2):
                 left.pop(0)
                 sorted2.append(left2[0])
                 left2.pop(0)
+
             elif left[0] <= right[0]:
                 sorted.append(right[0])
                 right.pop(0)
                 sorted2.append(right2[0])
                 right2.pop(0)
+
         elif len(left) > 0:
             while len(left) > 0:
                 sorted.append(left[0])
                 left.pop(0)
                 sorted2.append(left2[0])
                 left2.pop(0)
+
         else:
             while len(right) > 0:
                 sorted.append(right[0])
                 right.pop(0)
                 sorted2.append(right2[0])
                 right2.pop(0)
+
     return (sorted, sorted2)
 
 def google_search():
@@ -237,11 +268,14 @@ def setup_scraper():
                 my_scraper = Scraper(URL)
                 my_scraper.setup()
                 return my_scraper
+            
             elif user_input == 2:
                 clear_terminal()
                 URL = google_search()
+
             else:
                 print("Invalid input! \n Yes : 1 \n No : 2 \n")
+
         except:
             clear_terminal()
             print("Invalid input!\n")  
@@ -252,21 +286,27 @@ def setup_scraper():
 
 def main():
     clear_terminal()
+
     try:
         user_input = int(input("Please input a command \n1 : Title Data \n2 : Words data \n"))
         if user_input == 1:
             interface_title()
+
         elif user_input == 2:
             interface_word()
+
         else:
             print("Invalid input \n")
+
     except:
         print("Invalid input")
+
     input("Press enter to reload!")
     main()
 
 def interface_title():
     clear_terminal()
+
     try:
         user_input = int(input("Please input a command \n1 : Web Title\n2 : Images\n3 : Exit"))
         if user_input == 1:
@@ -274,6 +314,7 @@ def interface_title():
             start = 0
             end = 10
             mode = 0
+
             while user_input != 5:
                 try:
                     start, end = scraper_instance.main_title_printer(start,end,mode)
@@ -281,9 +322,11 @@ def interface_title():
                     if user_input == 1:
                         start += 10
                         end += 10
+
                     elif user_input == 2:
                         start -= 10
                         end -=10
+                        
                     elif user_input == 3:
                         clear_terminal()
                         try:
