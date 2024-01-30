@@ -172,6 +172,27 @@ class Scraper:
             print(f"{i + 1}) {self.main_title[i][mode].capitalize()}")
 
         return start, end
+    
+    def navigator_printer(self,start,end,content,mode):
+        if start < 0:
+            start = len(self.main_title) - 10
+            end = len(self.main_title)
+
+        elif end > len(self.main_title):
+            start = 0
+            end = 10
+        
+        if start < 0:
+            start = 0
+            end = 10
+
+        if end > len(content):
+            end = len(content)
+
+        for i in range(start,end):
+            print(f"{i + 1}) {content[i][mode].capitalize()}")
+            
+        return start,end
 
     def image_print(self,start,end,mode):
         if start < 0:
@@ -317,7 +338,7 @@ def interface_title():
 
             while user_input != 5:
                 try:
-                    start, end = scraper_instance.main_title_printer(start,end,mode)
+                    start, end = scraper_instance.navigator_printer(start,end,scraper_instance.main_title,mode)
                     user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : change content mode \n5 : exit \n"))
                     if user_input == 1:
                         start += 10
