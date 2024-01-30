@@ -159,30 +159,11 @@ class Scraper:
     def sort_counter(self):
         self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
 
-    def main_title_printer(self,start,end,mode):
-        if start < 0:
-            start = len(self.main_title) - 10
-            end = len(self.main_title)
-
-        if end > len(self.main_title):
-            start = 0
-            end = 10
-
-        for i in range(start,end):
-            print(f"{i + 1}) {self.main_title[i][mode].capitalize()}")
-
-        return start, end
-    
     def navigator_printer(self,start,end,content,mode):
         if start < 0:
             start = len(self.main_title) - 10
             end = len(self.main_title)
-
-        elif end > len(self.main_title):
-            start = 0
-            end = 10
-        
-        if start < 0:
+        elif start > len(content):
             start = 0
             end = 10
 
@@ -191,22 +172,13 @@ class Scraper:
 
         for i in range(start,end):
             print(f"{i + 1}) {content[i][mode].capitalize()}")
-            
+        
+        print(end,len(content))
+        if end == len(content):
+            print()
+            print(f"End of content!")
+
         return start,end
-
-    def image_print(self,start,end,mode):
-        if start < 0:
-            start = len(self.image_holder) - 10
-            end = len(self.image_holder)
-
-        if end > len(self.main_title):
-            start = 0
-            end = 10
-
-        for i in range(start,end):
-            print(f"{i + 1}) {self.image_holder[i][mode]}")
-
-        return start, end
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -380,7 +352,7 @@ def interface_title():
             mode = 0
             while user_input != 5:
                 try:
-                    start, end = scraper_instance.image_print(start,end,mode)
+                    start, end = scraper_instance.navigator_printer(start,end,scraper_instance.image_holder,mode)
                     user_input = int(input("\nPlease input a command \n1 : next 10 image \n2 : last 10 image \n3 : skip to \n4 : change content mode \n5 : exit \n"))
                     if user_input == 1:
                         start += 10
