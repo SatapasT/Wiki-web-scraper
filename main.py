@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from alive_progress import alive_bar
 import os
 import sys
 from googlesearch import search
@@ -45,21 +44,11 @@ class Scraper:
                 print()
             counter += 1
             self.update_soup(self.URL_holder[0])
-            self.URL_holder.pop(0)
             self.web_surf()
-
-        delete_above_print()
-        print(f"Surfed through {counter} total webs! \n",end="\r")
-        print(f"Analyzing the web!")
-
-        with alive_bar(len(self.visited)+1) as bar:
-            bar(0, skipped=True)
-            for i in range(0, len(self.visited)):
-                self.get_title(self.visited[i])
-                self.get_image(self.visited[i])
-                self.update_soup(self.visited[i])
-                self.keyword_finder()
-                bar()
+            self.get_title(self.URL_holder[0])
+            self.get_image(self.URL_holder[0])
+            self.keyword_finder()
+            self.URL_holder.pop(0)
 
     def get_image(self,URL):
         image_finder = self.soup.find_all('img')
@@ -150,14 +139,17 @@ class Scraper:
 
         return  start,end
 
+
     def word_amount_finder(self, word):
         for i in range(len(self.key_word_store)):
             if str(self.key_word_store[i]) == word:
                 return (f"{self.key_word_store[i].capitalize()} : {self.key_word_counter[i]}")
         print(f"{word} wasn't found within the database!")
-            
+
+
     def sort_counter(self):
         self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
+
 
     def navigator_printer(self,start,end,content,mode):
         if start < 0:
@@ -170,8 +162,12 @@ class Scraper:
         if end > len(content):
             end = len(content)
 
-        for i in range(start,end):
-            print(f"{i + 1}) {content[i][mode].capitalize()}")
+        if mode == "None":
+            for i in range(start,end):
+                print(f"{i + 1}) {content[i].capitalize()}")
+        else:
+            for i in range(start,end):
+                print(f"{i + 1}) {content[i][mode].capitalize()}")
         
         print(end,len(content))
         if end == len(content):
@@ -179,6 +175,7 @@ class Scraper:
             print(f"End of content!")
 
         return start,end
+
 
 def delete_above_print():
     cursor_up_one = "\x1b[1A" 
@@ -404,7 +401,7 @@ def interface_word():
             start = 0
             end = 10
             while user_input != 4:
-                start, end = scraper_instance.keyword_printer(start,end)
+                start, end = scraper_instance.navigator_printer(start,end,scraper_instance.key_word_store,"None")
                 user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : exit \n"))
                 try:
                     if user_input == 1:
