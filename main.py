@@ -152,15 +152,21 @@ class Scraper:
 
 
     def navigator_printer(self,start,end,content,mode):
+        content_length = len(content)
         if start < 0:
-            start = len(self.main_title) - 10
-            end = len(self.main_title)
-        elif start > len(content):
+            if content_length - 10 > 0:
+                start = content_length - 10
+                end = content_length
+            else:
+                start = 0
+                end = content_length
+
+        elif start >= content_length:
             start = 0
             end = 10
 
-        if end > len(content):
-            end = len(content)
+        if end > content_length:
+            end = content_length
 
         if mode == "None":
             for i in range(start,end):
@@ -169,8 +175,7 @@ class Scraper:
             for i in range(start,end):
                 print(f"{i + 1}) {content[i][mode].capitalize()}")
         
-        print(end,len(content))
-        if end == len(content):
+        if end == content_length:
             print()
             print(f"End of content!")
 
@@ -294,95 +299,63 @@ def main():
     input("Press enter to reload!")
     main()
 
+
+def navigator(scraper_instance,content,mode):
+    clear_terminal()
+    start = 0
+    end = 10
+    user_input = 0
+    while user_input != 5:
+        try:
+            start, end = scraper_instance.navigator_printer(start,end,content,mode)
+            input_prompt = "\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n"
+            if mode != "None":
+                input_prompt += "4 : change content mode \n"
+            input_prompt += "5 : exit \n"
+
+            user_input = int(input(input_prompt))
+
+            if user_input == 1:
+                start += 10
+                end += 10
+
+            elif user_input == 2:
+                start -= 10
+                end -=10
+                
+            elif user_input == 3:
+                clear_terminal()
+                try:
+                    start = int(input("Input where you want to skip to\n")) - 1
+                    end = start + 10
+                    if start > len(content) or start < 0:
+                        print("Input out of bound!")
+                        input("\nPress enter to reload!")
+                except:
+                    print("Invalid input")
+                    input("\nPress enter to reload!")
+            elif user_input == 4 and mode != "None":
+                mode = (mode+1)%2
+            elif user_input == 5:
+                pass
+            else:
+                print("Invalid input")
+                input("\nPress enter to reload!")
+        except:
+            print("Invalid input")
+            input("\nPress enter to reload!")
+        clear_terminal()
+
+        
 def interface_title():
     clear_terminal()
 
     try:
         user_input = int(input("Please input a command \n1 : Web Title\n2 : Images\n3 : Exit"))
         if user_input == 1:
-            clear_terminal()
-            start = 0
-            end = 10
-            mode = 0
-
-            while user_input != 5:
-                try:
-                    start, end = scraper_instance.navigator_printer(start,end,scraper_instance.main_title,mode)
-                    user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : change content mode \n5 : exit \n"))
-                    if user_input == 1:
-                        start += 10
-                        end += 10
-
-                    elif user_input == 2:
-                        start -= 10
-                        end -=10
-                        
-                    elif user_input == 3:
-                        clear_terminal()
-                        try:
-                            start = int(input("Input where you want to skip to\n")) - 1
-                            end = start + 10
-                            if start > len(scraper_instance.main_title) or start < 0:
-                                print("Input out of bound!")
-                                input("\nPress enter to reload!")
-                        except:
-                            print("Invalid input")
-                            input("\nPress enter to reload!")
-                    elif user_input == 4:
-                        if mode == 0:
-                            mode = 1
-                        else:
-                            mode = 0
-                    elif user_input == 5:
-                        pass
-                    else:
-                        print("Invalid input")
-                        input("\nPress enter to reload!")
-                except:
-                    print("Invalid input")
-                    input("\nPress enter to reload!")
-                clear_terminal()
+            navigator(scraper_instance,scraper_instance.main_title,0)
         elif user_input == 2:
-            clear_terminal()
-            start = 0
-            end = 10
-            mode = 0
-            while user_input != 5:
-                try:
-                    start, end = scraper_instance.navigator_printer(start,end,scraper_instance.image_holder,mode)
-                    user_input = int(input("\nPlease input a command \n1 : next 10 image \n2 : last 10 image \n3 : skip to \n4 : change content mode \n5 : exit \n"))
-                    if user_input == 1:
-                        start += 10
-                        end += 10
-                    elif user_input == 2:
-                        start -= 10
-                        end -=10
-                    elif user_input == 3:
-                        clear_terminal()
-                        try:
-                            start = int(input("Input where you want to skip to\n")) - 1
-                            end = start + 10
-                            if start > len(scraper_instance.main_title) or start < 0:
-                                print("Input out of bound!")
-                                input("\nPress enter to reload!")
-                        except:
-                            print("Invalid input")
-                            input("\nPress enter to reload!")
-                    elif user_input == 4:
-                        if mode == 0:
-                            mode = 1
-                        else:
-                            mode = 0
-                    elif user_input == 5:
-                        pass
-                    else:
-                        print("Invalid input")
-                        input("\nPress enter to reload!")
-                except:
-                    print("Invalid input")
-                    input("\nPress enter to reload!")
-                clear_terminal()    
-            scraper_instance.image_print()
+            navigator(scraper_instance,scraper_instance.image_holder,0)
         elif user_input == 3:
             main()
         else:
@@ -397,39 +370,7 @@ def interface_word():
     try:
         user_input = int(input("Please input a command \n1 : Words Count \n2 : Specific Word Count \n3 : Back\n"))
         if user_input == 1:
-            clear_terminal()
-            start = 0
-            end = 10
-            while user_input != 4:
-                start, end = scraper_instance.navigator_printer(start,end,scraper_instance.key_word_store,"None")
-                user_input = int(input("\nPlease input a command \n1 : next 10 word \n2 : last 10 word \n3 : skip to \n4 : exit \n"))
-                try:
-                    if user_input == 1:
-                        start += 10
-                        end += 10
-                    elif user_input == 2:
-                        start -= 10
-                        end -= 10
-                    elif user_input == 3:
-                        clear_terminal()
-                        try:
-                            start = int(input("Input where you want to skip to\n")) - 1
-                            end = start + 10
-                            if start > scraper_instance.word_count or start < 0:
-                                print("Input out of bound!")
-                                input("\nPress enter to reload!")
-                        except:
-                            print("Invalid input")
-                            input("\nPress enter to reload!")
-                    elif user_input == 4:
-                        interface_word()
-                    else:
-                        print("Invalid input")
-                        input("\nPress enter to reload!")
-                except:
-                    input("\nPress enter to reload!")
-                    print("Invalid input")
-                clear_terminal()
+            navigator(scraper_instance,scraper_instance.key_word_store,"None")
         if user_input == 2:
             clear_terminal()
             word_input = input("Input the keyword\n")
