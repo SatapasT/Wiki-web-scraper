@@ -30,25 +30,29 @@ class Scraper:
 
     def data_collector(self):
         clear_terminal()
-
-        print(f"Scraping all data from {self.main_web_address}!")
+        print(f"Scraping all data from {self.main_web_address}!\nStarting the loop!\n\n\n")
         counter = 1
-        print("Starting the loop!","\n","\n")
 
-        while len(self.URL_holder) != 0:
-            progress_bar = "-" * (counter % 10)
-            print(f"{progress_bar:<10}", end="\r")
-            if counter % 10 == 0:
-                delete_above_print()
-                print(f"Surfed through {counter} webs!", end="\r")
-                print()
+        while self.URL_holder:
+            self.display_progress(counter)
+            self.process_current_url(self.URL_holder.pop(0))
             counter += 1
-            self.update_soup(self.URL_holder[0])
-            self.web_surf()
-            self.get_title(self.URL_holder[0])
-            self.get_image(self.URL_holder[0])
-            self.keyword_finder()
-            self.URL_holder.pop(0)
+
+    def display_progress(self, counter):
+        progress_bar = "#" * (counter % 10)
+        print(f" |{progress_bar:<10}| ", end="\r")
+        if counter % 10 == 0:
+            delete_above_print()
+            delete_above_print()
+            print(f"Surfed through {counter} websites! \n")
+
+    def process_current_url(self, url):
+        self.update_soup(url)
+        self.web_surf()
+        self.get_title(url)
+        self.get_image(url)
+        self.keyword_finder()
+
 
     def get_image(self,URL):
         image_finder = self.soup.find_all('img')
