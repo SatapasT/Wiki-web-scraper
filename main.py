@@ -21,7 +21,7 @@ class Scraper:
         self.word_count = 0
         string_URL = str(URL)
         self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
-
+#test
     def setup(self):
         self.web_surf()
         self.data_collector()
