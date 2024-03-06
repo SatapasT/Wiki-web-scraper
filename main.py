@@ -8,6 +8,7 @@ from PIL import Image
 
 class Scraper:
 
+
     def __init__(self, URL):
         self.page = requests.get(URL)
         self.soup = BeautifulSoup(self.page.content, "html.parser")
@@ -21,12 +22,14 @@ class Scraper:
         self.word_count = 0
         string_URL = str(URL)
         self.main_web_address = string_URL[string_URL.find("https://"):string_URL.find("/wiki/") + len("/wiki/")]
-#test
+
+
     def setup(self):
         self.web_surf()
         self.data_collector()
         self.sort_counter()
         self.word_count = len(self.key_word_counter)
+
 
     def data_collector(self):
         clear_terminal()
@@ -38,6 +41,7 @@ class Scraper:
             self.process_current_url(self.URL_holder.pop(0))
             counter += 1
 
+
     def display_progress(self, counter):
         progress_bar = "#" * (counter % 10)
         print(f" |{progress_bar:<10}| ", end="\r")
@@ -45,6 +49,7 @@ class Scraper:
             delete_above_print()
             delete_above_print()
             print(f"Surfed through {counter} websites! \n")
+
 
     def process_current_url(self, url):
         self.update_soup(url)
@@ -76,6 +81,7 @@ class Scraper:
             if image_URL not in self.image_holder and image_URL != []:
                 self.image_holder.append([image_name,image_URL,URL])
 
+
     def get_title(self,URL):
         title_finder = self.soup.find_all('span', class_='mw-page-title-main')
 
@@ -85,9 +91,11 @@ class Scraper:
             closing_span = title_finder_string.find("</span>")
             self.main_title.append([title_finder_string[index_span:closing_span],URL])
 
+
     def update_soup(self,URL):
         self.page = requests.get(URL)
         self.soup = BeautifulSoup(self.page.content, "html.parser")
+
 
     def keyword_finder(self):
         span_finder = self.soup.find_all("span")
@@ -113,6 +121,7 @@ class Scraper:
                         self.key_word_counter[self.key_word_store.index(word_separator_arr[0])] += 1
                     word_separator_arr.pop(0)
                     
+
     def web_surf(self):
         web_finder = self.soup.find_all("a")
 
@@ -155,8 +164,9 @@ class Scraper:
         self.key_word_counter,self.key_word_store = merge_sort(self.key_word_counter,self.key_word_store)
 
 
-    def navigator_printer(self,start,end,content,mode):
+    def navigator_printer(self,start,end,content,mode,system=None):
         content_length = len(content)
+
         if start < 0:
             if content_length - 10 > 0:
                 start = content_length - 10
@@ -172,9 +182,9 @@ class Scraper:
         if end > content_length:
             end = content_length
 
-        if mode == "None":
+        if system == "None":
             for i in range(start,end):
-                print(f"{i + 1}) {content[i].capitalize()}")
+                print(f"{i + 1}) {content[i].capitalize()} : {self.key_word_counter[i]}")
         else:
             for i in range(start,end):
                 print(f"{i + 1}) {content[i][mode].capitalize()}")
