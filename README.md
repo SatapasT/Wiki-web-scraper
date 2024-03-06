@@ -24,8 +24,9 @@ python main.py
 
 ## Notes
 The program's execution time may vary depending on the size and structure of the Wikipedia page and its linked pages.
-Author
+
+## Author
 This program was created by SatapasT.
 
-Happy Scrapping!
+Happy Scrapping! :D
 
